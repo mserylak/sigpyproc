@@ -25,7 +25,7 @@ class Header(dict):
         super(Header, self).__setitem__(key,value)
                 
     def _mirror(self):
-        for key,value in self.items():
+        for key,value in list(self.items()):
             super(Header, self).__setattr__(key,value)
 
     def updateHeader(self):
@@ -115,7 +115,7 @@ class Header(dict):
         hend    = "HEADER_END"
         header  = "".join([pack("I",len(hstart)),hstart])
         
-        for key in self.keys():
+        for key in list(self.keys()):
             if back_compatible and key not in conf.sigproc_keys:
                 continue
             elif not back_compatible and key not in conf.header_keys:
@@ -168,7 +168,7 @@ class Header(dict):
                     " Total bandwidth (Mhz)                  =  %.05f\n"%(0.0),
                     " Channel bandwidth (Mhz)                =  %.09f\n"%(0.0))
 
-        if outfile == None:
+        if outfile is None:
             return "".join(inf)
         else:
             f = open(outfile,"w+")

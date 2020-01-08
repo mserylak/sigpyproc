@@ -101,7 +101,7 @@ class FilReader(Filterbank):
         tstart = time.time()
         skipback = abs(skipback)
         if skipback >= gulp:
-            raise ValueError,"readsamps must be > skipback value"
+            raise ValueError("readsamps must be > skipback value")
         self._file.seek(self.header.hdrlen+start*self.sampsize)
         nreads = nsamps//(gulp-skipback)
         lastread = nsamps-(nreads*(gulp-skipback))
@@ -112,27 +112,27 @@ class FilReader(Filterbank):
         blocks.append((nreads,lastread*self.header.nchans,0))
         
         if verbose:
-            print
-            print "Filterbank reading plan:"
-            print "------------------------"
-            print "Called on file:       ",self.filename      
-            print "Called by:            ",istack()[1][3]
-            print "Number of samps:      ",nsamps 
-            print "Number of reads:      ",nreads
-            print "Nsamps per read:      ",blocks[0][1]/self.header.nchans
-            print "Nsamps of final read: ",blocks[-1][1]/self.header.nchans
-            print "Nsamps to skip back:  ",-1*blocks[0][2]/self.header.nchans
-            print
+            print()
+            print("Filterbank reading plan:")
+            print("------------------------")
+            print("Called on file:       {0}".format(self.filename))
+            print("Called by:            {0}".format(istack()[1][3]))
+            print("Number of samps:      {0}".format(nsamps))
+            print("Number of reads:      {0}".format(nreads))
+            print("Nsamps per read:      {0}".format(blocks[0][1]/self.header.nchans))
+            print("Nsamps of final read: {0}".format(blocks[-1][1]/self.header.nchans))
+            print("Nsamps to skip back:  {0}".format(-1*blocks[0][2]/self.header.nchans))
+            print()
         
         for ii,block,skip in blocks:
             if verbose:
-                stdout.write("Percentage complete: %d%%\r"%(100*ii/nreads))
+                stdout.write("Percentage complete: {0}%%\r".format(100*ii/nreads))
                 stdout.flush()
             data = self._file.cread(block)
             self._file.seek(skip*self.itemsize/self.bitfact,os.SEEK_CUR)
             yield int(block/self.header.nchans),int(ii),data
         if verbose:
-            print "Execution time: %f seconds     \n"%(time.time()-tstart)
+            print("Execution time: {0} seconds     \n".format(time.time()-tstart))
 
 
 
@@ -158,7 +158,7 @@ def readDat(filename,inf=None):
     if inf is None:
         inf = "%s.inf"%(basename)
     if not os.path.isfile(inf):
-        raise IOError,"No corresponding inf file found"
+        raise IOError("No corresponding inf file found")
     header = parseInfHeader(inf)
     f = File(filename,"r",nbits=32)
     data = np.fromfile(f,dtype="float32")
@@ -206,7 +206,7 @@ def readFFT(filename,inf=None):
     if inf is None:
         inf = "%s.inf"%(basename)
     if not os.path.isfile(inf):
-        raise IOError,"No corresponding inf file found"
+        raise IOError("No corresponding inf file found")
     header = parseInfHeader(inf)
     f = File(filename,"r",nbits=32)
     data = np.fromfile(f,dtype="float32")
@@ -253,7 +253,7 @@ def parseInfHeader(filename):
     for line in lines:
         key = line.split("=")[0].strip()
         val = line.split("=")[-1].strip()
-        if not key in conf.inf_to_header.keys():
+        if key not in list(conf.inf_to_header.keys()):
             continue
         else:
             key,keytype = conf.inf_to_header[key]
@@ -284,15 +284,15 @@ def parseSigprocHeader(filename):
     try:
         keylen = unpack("I",f.read(4))[0]
     except struct.error:
-        raise IOError,"File Header is not in sigproc format... Is file empty?"
+        raise IOError("File Header is not in sigproc format... Is file empty?")
     key = f.read(keylen)
     if key != "HEADER_START":
-        raise IOError,"File Header is not in sigproc format"
+        raise IOError("File Header is not in sigproc format")
     while True:
         keylen = unpack("I",f.read(4))[0]
         key = f.read(keylen)
-        if not key in conf.header_keys:
-            print "'%s' not recognised header key"%(key)
+        if key not in list(conf.header_keys):
+            print("{0} not recognised header key".format(key))
             return None
 
         if conf.header_keys[key] == "str":
@@ -329,4 +329,3 @@ def _read_int(f):
 
 def _read_double(f):
     return unpack("d",f.read(8))[0]
-

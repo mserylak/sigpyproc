@@ -109,7 +109,7 @@ telescope_ids = {
     "Effelsberg LOFAR":9,
     "Unknown": 10}
 
-ids_to_telescope = dict(zip(telescope_ids.values(), telescope_ids.keys()))
+ids_to_telescope = dict(list(zip(list(telescope_ids.values()), list(telescope_ids.keys()))))
 
 machine_ids = {
     "FAKE": 0,
@@ -123,7 +123,7 @@ machine_ids = {
     "PFFTS": 8,
     "Unknown":9}
 
-ids_to_machine = dict(zip(machine_ids.values(), machine_ids.keys()))
+ids_to_machine = dict(list(zip(list(machine_ids.values()), list(machine_ids.keys()))))
 
 # not required (may be of use in future)
 telescope_lats_longs = {
@@ -144,7 +144,7 @@ nptypes_to_ctypes = {"|b1":C.c_bool,
                      "<f4":C.c_float,
                      "<f8":C.c_double}
 
-ctypes_to_nptypes = dict(zip(nptypes_to_ctypes.values(), nptypes_to_ctypes.keys())) 
+ctypes_to_nptypes = dict(list(zip(list(nptypes_to_ctypes.values()), list(nptypes_to_ctypes.keys()))))
 
 nbits_to_ctypes = {1:C.c_ubyte,
                    2:C.c_ubyte,
@@ -153,7 +153,7 @@ nbits_to_ctypes = {1:C.c_ubyte,
                    16:C.c_short,
                    32:C.c_float}
 
-ctypes_to_nbits = dict(zip(nbits_to_ctypes.values(), nbits_to_ctypes.keys())) 
+ctypes_to_nbits = dict(list(zip(list(nbits_to_ctypes.values()), list(nbits_to_ctypes.keys()))))
 
 nbits_to_dtype = {1:"<u1",
                   2:"<u1",
@@ -185,7 +185,7 @@ psrfits_to_sigpyproc = {
     "CHAN_BW":"foff",
     "TBIN":"tsamp"}
     
-sigpyproc_to_psrfits = dict(zip(psrfits_to_sigpyproc.values(),psrfits_to_sigpyproc.keys()))
+sigpyproc_to_psrfits = dict(list(zip(list(psrfits_to_sigpyproc.values()), list(psrfits_to_sigpyproc.keys()))))
 
 sigproc_to_tempo = {
     0:"g",

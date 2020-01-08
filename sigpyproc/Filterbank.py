@@ -19,9 +19,9 @@ class Filterbank(object):
     """
     def __init__(self):
         if self.header.nbits == 32:
-            self.lib = lib32 #if 32-bit data select 32-bit library
+            self.lib = lib32  # if 32-bit data select 32-bit library
         else:
-            self.lib = lib8 #if 8-bit data select 8-bit library
+            self.lib = lib8  # if 8-bit data select 8-bit library
         self.chan_means  = None
         self.chan_stdevs = None
         self.chan_maxima = None
@@ -83,7 +83,7 @@ class Filterbank(object):
         :return type: :func:`str`
         """
         if filename is None:
-            filename = "%s_inverted.fil"%(self.header.basename)
+            filename = "{0}_inverted.fil".format(self.header.basename)
 
         if nsamps is None:
             size = self.header.nsamples-start
@@ -97,7 +97,7 @@ class Filterbank(object):
             sign = -1.0
         changes    = {"fch1":self.header.fch1+sign*(self.header.nchans-1)*self.header.foff,
                       "foff":self.header.foff*sign*(-1.0)}
-        #NB bandwidth is +ive by default
+        # NB bandwidth is +ive by default
         out_file = self.header.prepOutfile(filename, changes,
                                           nbits=self.header.nbits,
                                           back_compatible=back_compatible)
@@ -186,7 +186,7 @@ class Filterbank(object):
         chan_delays_c = as_c(chan_delays)
         max_delay     = int(chan_delays.max())
         gulp          = max(2*max_delay,gulp)
-        out_ar        = np.empty((gulp-max_delay)*nsub,dtype="float32") #must be memset to zero in c code
+        out_ar        = np.empty((gulp-max_delay)*nsub,dtype="float32")  # must be memset to zero in c code
         out_ar_c      = as_c(out_ar)
         new_foff      = self.header.foff*self.header.nchans/nsub
         new_fch1      = self.header.ftop-new_foff/2.
@@ -231,7 +231,7 @@ class Filterbank(object):
         
         """
         if filename is None:
-            filename = "%s_8bit.fil"%(self.header.basename)
+            filename = "{0}_8bit.fil".format(self.header.basename)
             
         out_file = self.header.prepOutfile(filename,{"nbits":8},nbits=8,back_compatible=back_compatible)
         for nsamps,ii,data in self.readPlan(gulp):
@@ -257,7 +257,7 @@ class Filterbank(object):
         :rtype: str
         """
         if outfilename is None:
-            outfilename = "%s_masked.fil"%(self.header.basename)
+            outfilename = "{0}_masked.fil".format(self.header.basename)
         mask = np.array(chanmask).astype("ubyte")
         out_file = self.header.prepOutfile(outfilename,back_compatible=back_compatible)
         for nsamps,ii,data in self.readPlan(gulp):
@@ -290,11 +290,11 @@ class Filterbank(object):
         :rtype: :func:`str`
         """
         if filename is None:
-            filename = "%s_f%d_t%d.fil"%(self.header.basename,ffactor,tfactor)
+            filename = "{0}_f{1}_t{2}.fil".format(self.header.basename,ffactor,tfactor)
         if not self.header.nchans%ffactor == 0:
-            raise ValueError,"Bad frequency factor given"
+            raise ValueError("Bad frequency factor given")
         if not gulp%tfactor == 0:
-            raise ValueError,"Gulp must be a multiple of tfactor"
+            raise ValueError("Gulp must be a multiple of tfactor")
         out_file = self.header.prepOutfile(filename,
                                    {"tsamp":self.header.tsamp*tfactor,
                                     "nchans":self.header.nchans/ffactor,
@@ -346,11 +346,11 @@ class Filterbank(object):
 
         """
         if np.modf(period/self.header.tsamp)[0]<0.001:
-            print "WARNING: Foldng interval is an integer multiple of the sampling time"
+            print("WARNING: Foldng interval is an integer multiple of the sampling time")
         if nbins > period/self.header.tsamp:
-            print "WARNING: Number of phase bins is greater than period/sampling time"
+            print("WARNING: Number of phase bins is greater than period/sampling time")
         if (self.header.nsamples*self.header.nchans)/(nbands*nints*nbins) < 10:
-            raise ValueError,"nbands x nints x nbins is too large."
+            raise ValueError("nbands x nints x nbins is too large.")
         nbands        = min(nbands,self.header.nchans)
         chan_delays   = self.header.getDMdelays(dm)
         chan_delays_c = as_c(chan_delays)
@@ -394,7 +394,7 @@ class Filterbank(object):
         :rtype: :class:`~sigpyproc.TimeSeries.TimeSeries`
         """
         if chan >= self.header.nchans or chan < 0:
-            raise ValueError,"Selected channel out of range."
+            raise ValueError("Selected channel out of range.")
         tim_ar   = np.empty(self.header.nsamples,dtype="float32")
         tim_ar_c = as_c(tim_ar)
         for nsamps,ii,data in self.readPlan(gulp):
@@ -429,6 +429,7 @@ class Filterbank(object):
         """
         if filename is None:
             filename = "%s_%d_%d.fil"%(self.header.basename,start,start+nsamps)
+            filename = "{0}_{1}_{2}.fil".format(self.header.basename,start,start+nsamps)
         new_tstart = self.header.tstart + ((self.header.tsamp * start) / 86400.0)
         out_file = self.header.prepOutfile(filename, updates={'tstart': new_tstart}, nbits=self.header.nbits)
         for count, ii, data in self.readPlan(gulp,start=start,nsamps=nsamps):
@@ -455,11 +456,10 @@ class Filterbank(object):
         """
         tim_ar   = np.empty([self.header.nchans,gulp],dtype="float32")
         tim_ar_c = as_c(tim_ar)
-        out_files = [self.header.prepOutfile("%s_chan%04d.tim"%(self.header.basename,ii),
+        out_files = [self.header.prepOutfile("{0}_chan{1:04d}.tim".format(self.header.basename,ii),
                                              {"nchans":1,"nbits":32,"data_type":2},
                                              back_compatible=back_compatible,nbits=32)
-            
-                     for ii in xrange(self.header.nchans)]
+                     for ii in range(self.header.nchans)]
         for nsamps,ii,data in self.readPlan(gulp):
             self.lib.splitToChans(as_c(data),
                                   tim_ar_c,
@@ -558,7 +558,7 @@ class FilterbankBlock(np.ndarray):
 
         """ 
         if not self.shape[0]%ffactor == 0:
-            raise ValueError,"Bad frequency factor given"
+            raise ValueError("Bad frequency factor given")
         newnsamps = self.shape[1] - self.shape[1]%tfactor
         new_ar = np.empty(newnsamps*self.shape[0]/ffactor/tfactor,dtype="float32")
         ar = self.transpose().ravel().copy()
@@ -587,7 +587,7 @@ class FilterbankBlock(np.ndarray):
         :rtype: :func:`str`
         """
         if filename is None:
-            filename = "%s_%d_to_%d.fil"%(self.header.basename,self.header.tstart,
+            filename = "{0}_{1}_to_{2}.fil".format(self.header.basename,self.header.tstart,
                                           self.header.mjdAfterNsamps(self.shape[1]))
         new_header = {"nbits":32}
         out_file = self.header.prepOutfile(filename,new_header,nbits=32,back_compatible=back_compatible)
@@ -630,4 +630,3 @@ class FilterbankBlock(np.ndarray):
         return new_ar
         
 from sigpyproc.TimeSeries import TimeSeries
-
